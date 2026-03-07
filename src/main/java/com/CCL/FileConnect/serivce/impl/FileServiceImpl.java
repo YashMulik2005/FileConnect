@@ -85,7 +85,7 @@ public class FileServiceImpl implements FileService {
                     file.getFileName(),
                     file.getContentType(),
                     file.getSize(),
-                    "https://your-frontend-domain.com/file/" + file.getUrl()
+                    "http://localhost:5173/file/" + file.getUrl()
             );
 
             mailService.sendmail(mailRequestDto.getMail(), subject, body);
