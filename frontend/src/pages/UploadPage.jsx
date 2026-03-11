@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { uploadFile, shareByMail } from "../api/fileApi";
 import QRModal from "../components/QRModal";
+import { FiCopy } from "react-icons/fi";
 
 export default function UploadPage() {
   const [file, setFile] = useState(null);
@@ -32,32 +33,48 @@ export default function UploadPage() {
     setFile(e.dataTransfer.files[0]);
   };
 
-  const fmt = (bytes) => bytes > 1e6 ? `${(bytes/1e6).toFixed(1)} MB` : `${(bytes/1e3).toFixed(1)} KB`;
+  const fmt = (bytes) =>
+    bytes > 1e6
+      ? `${(bytes / 1e6).toFixed(1)} MB`
+      : `${(bytes / 1e3).toFixed(1)} KB`;
 
   return (
     <div className="page">
       <header className="header">
         <span className="logo">FileConnect</span>
         <nav>
-          <a href="#" className="nav-active">Upload</a>
+          <a href="#" className="nav-active">
+            Upload
+          </a>
           <a href="#retrieve">Retrieve</a>
         </nav>
       </header>
-
       <main className="main">
         <div className="hero-text">
-          <h1>Drop. Share. <em>Done.</em></h1>
-          <p>Upload any file and share it instantly via link, QR code, or email.</p>
+          <h1>
+            Drop. Share. <em>Done.</em>
+          </h1>
+          <p>
+            Upload any file and share it instantly via link, QR code, or email.
+          </p>
         </div>
 
         <div
           className={`dropzone ${drag ? "drag-over" : ""} ${file ? "has-file" : ""}`}
           onClick={() => inputRef.current.click()}
-          onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDrag(true);
+          }}
           onDragLeave={() => setDrag(false)}
           onDrop={onDrop}
         >
-          <input ref={inputRef} type="file" hidden onChange={(e) => setFile(e.target.files[0])} />
+          <input
+            ref={inputRef}
+            type="file"
+            hidden
+            onChange={(e) => setFile(e.target.files[0])}
+          />
           {file ? (
             <div className="file-info">
               <span className="file-icon">📎</span>
@@ -72,15 +89,43 @@ export default function UploadPage() {
           )}
         </div>
 
-        <button className="btn-primary" onClick={handleUpload} disabled={!file || loading}>
+        <button
+          className="btn-primary"
+          onClick={handleUpload}
+          disabled={!file || loading}
+        >
           {loading ? <span className="spinner" /> : "Upload File"}
         </button>
 
         {result && (
           <div className="result-card">
             <div className="result-row">
-              <span className="result-label">Short URL</span>
-              <code className="result-url">{result.url}</code>
+              <span className="result-label">Share Link</span>
+
+              <div className="result-url" style={{ display: "flex" }}>
+                <code>
+                  {import.meta.env.VITE_APP_BASE + "/file/" + result.url}
+                </code>
+
+                <button
+                  style={{
+                    marginLeft: "10px",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      import.meta.env.VITE_APP_BASE + "/file/" + result.url,
+                    )
+                  }
+                >
+                  <FiCopy color="white" />
+                </button>
+              </div>
             </div>
             <div className="result-row">
               <span className="result-label">File</span>
@@ -102,14 +147,24 @@ export default function UploadPage() {
                 value={mail}
                 onChange={(e) => setMail(e.target.value)}
               />
-              <button className="btn-secondary" onClick={handleShare}>Send</button>
-              <button className="btn-qr" onClick={() => setShowQR(true)}>QR</button>
+              <button className="btn-secondary" onClick={handleShare}>
+                Send
+              </button>
+              <button className="btn-qr" onClick={() => setShowQR(true)}>
+                QR
+              </button>
             </div>
             {shareMsg && <p className="share-msg">{shareMsg}</p>}
           </div>
         )}
       </main>
-
-{showQR && <QRModal fileUrl={result.file} fileName={result.fileName} onClose={() => setShowQR(false)} />}    </div>
+      {showQR && (
+        <QRModal
+          fileUrl={result.file}
+          fileName={result.fileName}
+          onClose={() => setShowQR(false)}
+        />
+      )}{" "}
+    </div>
   );
 }
