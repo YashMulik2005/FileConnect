@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@CrossOrigin(origins = "https://file-connect-ae2q.vercel.app")
 @RestController
 @RequestMapping("/api")
 public class FileController {
